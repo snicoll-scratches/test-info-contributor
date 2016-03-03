@@ -6,11 +6,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.info.AbstractEnvironmentInfoContributor;
+import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.SimpleInfoContributor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -34,5 +37,21 @@ public class DemoApplication {
 		factory.setProperties(properties);
 		factory.bindPropertiesToTarget();
 		return new SimpleInfoContributor("gitfull", content);
+	}
+
+	@Bean
+	public InfoContributor fooInfoContributor(ConfigurableEnvironment env) {
+		return new AbstractEnvironmentInfoContributor(env) {
+			private Map<String, Object> content;
+
+			@Override
+			public void contribute(Info.Builder builder) {
+				if (this.content == null) {
+					this.content = new LinkedHashMap<>();
+					bindEnvironmentTo("foo", this.content);
+				}
+				builder.withDetail("bar", this.content);
+			}
+		};
 	}
 }
