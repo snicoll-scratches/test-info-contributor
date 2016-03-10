@@ -15,10 +15,10 @@ public class DemoApplication {
 	}
 
 	@Bean
-	public InfoContributor fooInfoContributor(ConfigurableEnvironment env) {
+	public InfoContributor myInfoContributor(ConfigurableEnvironment env) {
 		return b -> {
 			PropertySourcesBinder binder = new PropertySourcesBinder(env);
-			b.withDetail("bar", binder.extractAll("foo"));
+			b.withDetail("custom", binder.extractAll("specific.app.Foo"));
 		};
 
 	}
